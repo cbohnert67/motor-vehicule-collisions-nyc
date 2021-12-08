@@ -66,9 +66,9 @@ filtered = data[
 hist = np.histogram(filtered['date/time'].dt.minute, bins=60, range=(0,60))[0]
 chart_data = pd.DataFrame({"minute": range(60), "crashes": hist})
 fig = px.bar(chart_data, x="minute", y = "crashes", hover_data = ["minute", "crashes"], height= 400)
-st.write(fig)
+st.plotly_chart(fig)
 
-st.header("Whate is the top 5 dangerous streets by affected people ?")
+st.header("What is the top 5 dangerous streets by affected people ?")
 select = st.selectbox("Affected type of people :", ["Pedestrians", "Cyclists", "Motorists"])
 
 if select=="Pedestrians":
