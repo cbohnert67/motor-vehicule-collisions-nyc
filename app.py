@@ -21,12 +21,39 @@ def load_data(nrows):
     data.rename(columns = {'crash_date_crash_time':'date/time'}, inplace=True)
     return data
 
-data = load_data(1000000)
+
+data = load_data(1847335)
 original_data = data
 
 st.header("Where are the most people injured in NYC?")
-injured_people = st.slider("Number if persons injured in vehicles collisions :", 0, 19)
-st.map(data.query("number_of_persons_injured >= @injured_people")[["latitude", "longitude"]].dropna(how="any"), zoom=9)
+injured_people = st.slider("Number of persons injured in vehicles collisions :", 1, 19)
+#st.map(data.query("number_of_persons_injured >= @injured_people")[["latitude", "longitude"]].dropna(how="any"), zoom=10)
+
+st.write(pdk.Deck(
+    map_style="mapbox://styles/mapbox/light-v9",
+    initial_view_state={
+        "latitude": 40.680833,
+        "longitude":  -73.97511,
+        "zoom":10,
+        "pitch": 50,
+    },
+    layers = [
+        pdk.Layer(
+            "HexagonLayer", 
+            data=data.query("number_of_persons_injured >= @injured_people")[["date/time", "latitude", "longitude"]].dropna(how="any"),
+            get_position=['longitude', 'latitude'],
+            radius=100,
+            extruded=True,
+            pickable=True,
+            elevation_scale=4,
+            elevation_range=[0,1000],
+        ),
+    ]
+
+))
+
+
+
 
 st.header("How many collisions occur during a given time of day ?")
 hour = st.slider("Hour to look at :", 0, 23)
