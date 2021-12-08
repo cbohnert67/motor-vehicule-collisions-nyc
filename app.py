@@ -21,12 +21,12 @@ def load_data(nrows):
     data.rename(columns = {'crash_date_crash_time':'date/time'}, inplace=True)
     return data
 
-data = load_data(100000)
+data = load_data(1000000)
 original_data = data
 
 st.header("Where are the most people injured in NYC?")
 injured_people = st.slider("Number if persons injured in vehicles collisions :", 0, 19)
-st.map(data.query("number_of_persons_injured >= @injured_people")[["latitude", "longitude"]].dropna(how="any"))
+st.map(data.query("number_of_persons_injured >= @injured_people")[["latitude", "longitude"]].dropna(how="any"), zoom=9)
 
 st.header("How many collisions occur during a given time of day ?")
 hour = st.slider("Hour to look at :", 0, 23)
@@ -34,14 +34,13 @@ data = data[data["date/time"].dt.hour == hour]
 
 st.markdown("Vehicle collisions between {}:00 and {}:00 :".format(hour, (hour+1)%24))
 
-midpoint = (np.average(data['latitude']), np.average(data["longitude"]))
 
 st.write(pdk.Deck(
     map_style="mapbox://styles/mapbox/light-v9",
     initial_view_state={
-        "latitude": midpoint[0],
-        "longitude": midpoint[1],
-        "zoom":11,
+        "latitude": 40.680833,
+        "longitude":  -73.97511,
+        "zoom":10,
         "pitch": 50,
     },
     layers = [
@@ -74,9 +73,9 @@ select = st.selectbox("Affected type of people :", ["Pedestrians", "Cyclists", "
 if select=="Pedestrians":
     st.write(original_data.query("number_of_pedestrians_injured>=1")[["on_street_name", "number_of_pedestrians_injured"]].sort_values(by=['number_of_pedestrians_injured'], ascending=False).dropna(how="any")[:5])
 elif select=="Cyclists":
-    st.write(original_data.query("number_of_cyclists_injured >=1")[["on_street_name", "number_of_cyclists_injured"]].sort_values(by=['number_of_cyclists_injured'], ascending=False).dropna(how="any")[:5])
+    st.write(original_data.query("number_of_cyclist_injured >=1")[["on_street_name", "number_of_cyclist_injured"]].sort_values(by=['number_of_cyclist_injured'], ascending=False).dropna(how="any")[:5])
 else:
-    st.write(original_data.query("number_of_motorists_injured>=1")[["on_street_name", 'number_of_motorists_injured']].sort_values(by=['number_of_motorists_injured'], ascending=False).dropna(how="any")[:5])
+    st.write(original_data.query("number_of_motorist_injured>=1")[["on_street_name", 'number_of_motorist_injured']].sort_values(by=['number_of_motorist_injured'], ascending=False).dropna(how="any")[:5])
 
 
 
